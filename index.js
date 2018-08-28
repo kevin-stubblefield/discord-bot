@@ -31,7 +31,7 @@ client.on('message', message => {
     if (!client.commands.has(command)) return;
 
     try {
-        client.commands.get(command).execute(message, args, data);
+        client.commands.get(command).execute(message, args);
     } catch(error) {
         console.error(error);
         message.reply('There was an error with your command.');
@@ -63,6 +63,7 @@ async function scrape() {
 
             console.log(`${title} - ${oldPrice} - ${newPrice}`);
         }
+        require('fs').writeFileSync(`${__dirname}/data/xbox.json`, JSON.stringify(data), { flag: 'w' });
     } finally {
         await driver.quit();
     }
