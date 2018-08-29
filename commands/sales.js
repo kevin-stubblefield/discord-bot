@@ -1,74 +1,29 @@
-module.exports = {
-    name: 'sales',
-    description: 'Provides game sales currently going on for PC, PS4, Xbox One, and Nintendo Switch.',
-    hasParams: true,
-    parameters: [
-        {
-            name: 'limit',
-            isOptional: true,
-            description: 'Limit the number of results in each message (default: 15).',
-            usage: 'limit <number>',
-            type: 'number',
-            numOfParameters: 1
-        },
-        {
-            name: 'offset',
-            isOptional: true,
-            description: 'Start the list of results further down the list (default: 0).',
-            usage: 'offset <number>',
-            type: 'number',
-            numOfParameters: 1
-        },
-        {
-            name: 'search',
-            isOptional: true,
-            description: 'Search for a specific game within the results.',
-            usage: 'search <query>',
-            type: 'string',
-            numOfParameters: 1
-        }
-    ],
-    execute(message, args) {
-        console.log(args);
-
-        let processedArgs = {};
-        for(let i = 0; i < args.length; i++) {
-            let arg = args[i];
-            if (argDefinitions.hasOwnProperty(arg)) {
-                let parameter = args[i + 1];
-                if (argDefinitions[arg].type === 'number' && !isNaN(parameter)) {
-                    processedArgs[arg] = parseInt(parameter);
-                } else if (typeof parameter === argDefinitions[arg].type) {
-                    processedArgs[arg] = parameter;
-                } else {
-                    message.channel.send(`${arg} parameter should be a ${argDefinitions[arg].type}`);
-                }
-                i++;
-            } else {
-                message.channel.send(`${arg} is an invalid argument for the !sales command.\nType !help sales for list of accepted arguments (not yet implemented).`);
-            }
-        }
-        console.log(processedArgs);
-        const data = getData(processedArgs);
-        
-        sendResults(message, data, processedArgs.search, processedArgs.offset, processedArgs.limit);
-    }
-}
-
-const argDefinitions = {
+const parameters = {
     limit: {
+        name: 'limit',
+        isOptional: true,
+        description: 'Limit the number of results in each message (default: 15).',
+        usage: 'limit <number>',
         type: 'number',
         numOfParameters: 1
     },
     offset: {
+        name: 'offset',
+        isOptional: true,
+        description: 'Start the list of results further down the list (default: 0).',
+        usage: 'offset <number>',
         type: 'number',
         numOfParameters: 1
     },
     search: {
+        name: 'search',
+        isOptional: true,
+        description: 'Search for a specific game within the results.',
+        usage: 'search <query>',
         type: 'string',
         numOfParameters: 1
     }
-}
+};
 
 const getData = (args) => {
     return require('../data/xbox.json');
@@ -84,6 +39,13 @@ const sendResults = (message, data, search='', offset=0, limit=15) => {
     // console.log(resultSet);
 
     let stringToSend = '';
+
+    if (!resultSet.length) {
+        stringToSend = `Couldn't find any games`;
+        if (search) stringToSend += ' matching your search';
+        return message.channel.send(stringToSend);
+    }
+
     for (let i = offset; i < offset + limit && i < resultSet.length; i++) {
         let game = resultSet[i];
         let string = `${game.title}: ~~${game.oldPrice}~~ ${game.newPrice}`;
@@ -103,5 +65,37 @@ const sendResults = (message, data, search='', offset=0, limit=15) => {
         }).catch(error => {
             message.channel.send(`Command expired, if you'd like to see more, enter a new command.`);
         });
+    }
+}
+
+module.exports = {
+    name: 'sales',
+    description: 'Provides game sales currently going on for PC, PS4, Xbox One, and Nintendo Switch.',
+    hasParams: true,
+    parameters: parameters,
+    execute(message, args) {
+        console.log(args);
+
+        let processedArgs = {};
+        for(let i = 0; i < args.length; i++) {
+            let arg = args[i];
+            if (parameters.hasOwnProperty(arg)) {
+                let parameter = args[i + 1];
+                if (parameters[arg].type === 'number' && !isNaN(parameter)) {
+                    processedArgs[arg] = parseInt(parameter);
+                } else if (typeof parameter === parameters[arg].type) {
+                    processedArgs[arg] = parameter;
+                } else {
+                    message.channel.send(`${arg} parameter should be a ${parameters[arg].type}`);
+                }
+                i++;
+            } else {
+                message.channel.send(`${arg} is an invalid argument for the !sales command.\nType !help sales for list of accepted arguments (not yet implemented).`);
+            }
+        }
+        console.log(processedArgs);
+        const data = getData(processedArgs);
+        
+        sendResults(message, data, processedArgs.search, processedArgs.offset, processedArgs.limit);
     }
 }

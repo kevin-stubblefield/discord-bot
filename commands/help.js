@@ -26,8 +26,8 @@ module.exports = {
 
         if (command.aliases) data.push(`**Aliases:** ${command.aliases.join(', ')}`);
         if (command.description) data.push(`**Description:** ${command.description}`);
-        if (command.hasParams) data.push(`**Parameters:** ${command.parameters.map(param => {
-            return `\`\`\`${param.name}: ${param.description}\nUsage: ${param.usage}\nOptional?: ${param.isOptional}\`\`\``
+        if (command.hasParams) data.push(`**Parameters:** ${Object.entries(command.parameters).map(([key, param]) => {
+            return `\`\`\`Name: ${param.name}\nDescription: ${param.description}\nUsage: ${param.usage}\nOptional?: ${param.isOptional}\`\`\``
         }).join('\n')}`);
 
         message.channel.send(data, { split: true });
