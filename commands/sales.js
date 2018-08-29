@@ -1,6 +1,33 @@
 module.exports = {
     name: 'sales',
     description: 'Provides game sales currently going on for PC, PS4, Xbox One, and Nintendo Switch.',
+    hasParams: true,
+    parameters: [
+        {
+            name: 'limit',
+            isOptional: true,
+            description: 'Limit the number of results in each message (default: 15).',
+            usage: 'limit <number>',
+            type: 'number',
+            numOfParameters: 1
+        },
+        {
+            name: 'offset',
+            isOptional: true,
+            description: 'Start the list of results further down the list (default: 0).',
+            usage: 'offset <number>',
+            type: 'number',
+            numOfParameters: 1
+        },
+        {
+            name: 'search',
+            isOptional: true,
+            description: 'Search for a specific game within the results.',
+            usage: 'search <query>',
+            type: 'string',
+            numOfParameters: 1
+        }
+    ],
     execute(message, args) {
         console.log(args);
 
@@ -66,7 +93,7 @@ const sendResults = (message, data, search='', offset=0, limit=15) => {
     if (offset + limit < resultSet.length) {
         stringToSend += 'Would you like to see more results? (If no, please allow the command to expire after 8 seconds)';
     }
-    message.channel.send(stringToSend);
+    message.channel.send(stringToSend, { split: true });
 
     if (offset + limit < resultSet.length) {
         const filter = m => m.content.toLowerCase().startsWith('y') || m.content.toLowerCase().startsWith('pl');
