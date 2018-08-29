@@ -18,7 +18,7 @@ module.exports = {
                 }
                 i++;
             } else {
-                message.channel.send(`!sales does not acknowledge ${arg} as an argument.\nType !help sales for list of accepted arguments (not yet implemented).`);
+                message.channel.send(`${arg} is an invalid argument for the !sales command.\nType !help sales for list of accepted arguments (not yet implemented).`);
             }
         }
         console.log(processedArgs);
