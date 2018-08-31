@@ -16,7 +16,7 @@ module.exports = {
         }
 
         const name = args[0].toLowerCase();
-        const command = commands.get(name);
+        const command = commands.get(name) || commands.find(c => c.aliases && c.aliases.includes(name));
 
         if (!command) {
             return message.reply(`${name} is not a valid command!`);
